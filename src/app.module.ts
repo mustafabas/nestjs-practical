@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configValidationSchema } from './config/config.schema';
-
-import { DatabaseModule } from './database/database.module';
 import { PostsModule } from './posts/posts.module';
+import { AuthModule } from './auth/auth.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -11,8 +11,18 @@ import { PostsModule } from './posts/posts.module';
       envFilePath: [`.env.stage.${process.env.STAGE}`],
       validationSchema: configValidationSchema,
     }),
-    DatabaseModule,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const connectionString = configService.get('CONNECTION_STRING');
+        return {
+          uri: connectionString,
+        };
+      },
+    }),
     PostsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
