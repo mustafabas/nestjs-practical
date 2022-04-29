@@ -7,6 +7,7 @@ export class UsersController {
 
   @Get()
   async getUsers() {
-    return await this.redditUserClient.getUsers();
-  }
+    //await this.redditUserClient.fillUsersTask();
+    return "";
+    }
 }

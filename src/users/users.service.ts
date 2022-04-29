@@ -9,12 +9,16 @@ export class UsersService {
     @InjectModel(RedditUser.name)
     private redditUserModel: Model<RedditUserDocument>,
   ) {}
-  async getLastUser() {
-    const lastRedditUser = await this.redditUserModel.findOne(
+  async findOneOrderByRedditCreated(orderBy: number): Promise<RedditUser> {
+    const firstRedditUser = await this.redditUserModel.findOne(
       {},
       {},
-      { sort: { created_at: -1 } },
+      { sort: { created: orderBy } },
     );
-    return lastRedditUser;
+    return firstRedditUser;
+  }
+
+  async getUserByName(name: string): Promise<RedditUser> {
+    return await this.redditUserModel.findOne({ name: name });
   }
 }

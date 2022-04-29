@@ -1,46 +1,58 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { RedditUser, RedditUserDocument } from '../schemas/reddituser.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { UsersService } from './users.service';
 import axios from 'axios';
+import { REDDIT_USER_LIST_URL } from '../constant';
 
 @Injectable()
 export class RedditUsersInitService implements OnModuleInit {
+  private readonly logger = new Logger(RedditUsersInitService.name);
+
   constructor(
     @InjectModel(RedditUser.name)
     private redditUserModel: Model<RedditUserDocument>,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {}
   async onModuleInit() {
-    const fiveDaysAgo = new Date(new Date().setDate(new Date().getDate() - 2));
-    while (1) {
-      const lastRedditUser = await this.usersService.getLastUser();
-      if (lastRedditUser) {
-        console.log(lastRedditUser);
-        const lastAddedDate = new Date(lastRedditUser.created * 1000);
-        console.log(lastAddedDate, 'lastAddedDate');
-        if (lastAddedDate < fiveDaysAgo) {
-          break;
-        }
-      }
-      const users = await axios.get('https://www.reddit.com/users/new.json', {
-        params: {
-          count: 100,
-          limit: 100,
-          after: lastRedditUser ? lastRedditUser.name : '',
-        },
-      });
-      const usersData: any = users.data.data.children;
-      const userDocumentItems: RedditUser[] = [];
+    const firstRedditUser = await this.usersService.findOneOrderByRedditCreated(
+      1,
+    );
+    let firstRedditUserTemp: any = {
+      name: firstRedditUser ? firstRedditUser.name : '',
+      created: firstRedditUser ? firstRedditUser.created : '',
+    };
 
-      usersData.forEach((redditUserData: any) => {
+    const oneHourBefore = new Date();
+    while (1) {
+      if (!!firstRedditUserTemp.created) {
+        const firstUserCreatedDate = new Date(
+          firstRedditUserTemp.created * 1000,
+        );
+        if (firstUserCreatedDate < oneHourBefore) break;
+      }
+      let url = `${REDDIT_USER_LIST_URL}?count=100&limit=100`;
+      if (!!firstRedditUserTemp.name)
+        url += `&after=${firstRedditUserTemp.name}`;
+      const usersResponse = await axios.get(url);
+      const usersData: any = usersResponse.data.data.children;
+      const userDocumentItems: RedditUser[] = [];
+      const fetchedLastUser = usersData[usersData.length - 1].data;
+      firstRedditUserTemp = {
+        name: fetchedLastUser.name,
+        created: fetchedLastUser.created,
+      };
+
+      await usersData.reduce(async (promise, redditUserData) => {
         const element: RedditUser = redditUserData.data as RedditUser;
-        userDocumentItems.push(element);
-      });
-      const created = await this.redditUserModel.insertMany(userDocumentItems);
-      console.log('Users Saved');
+        const userCheck = await this.usersService.getUserByName(element.name);
+        if (userCheck) console.log(userCheck.name, 'found');
+        if (!userCheck) userDocumentItems.push(element);
+      }, Promise.resolve());
+      await this.redditUserModel.insertMany(userDocumentItems);
+      this.logger.log(`${userDocumentItems.length} users saved`);
     }
-    console.log('user initialization finished');
+    this.logger.log('user initialization finished');
   }
 }

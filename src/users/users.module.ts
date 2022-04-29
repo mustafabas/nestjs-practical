@@ -12,8 +12,8 @@ import { RedditUsersInitService } from './reddituser.init.service';
     MongooseModule.forFeature([
       { name: RedditUser.name, schema: RedditUserSchema }
     ]),
-    ScheduleModule.forRoot(),
-  ],
+    ScheduleModule.forRoot()
+    ],
   providers: [
     UsersService,
     RedditUserClientTaskService,
