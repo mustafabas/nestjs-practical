@@ -5,7 +5,7 @@ import { RedditUser, RedditUserDocument } from '../schemas/reddituser.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { UsersService } from './users.service';
-import { REDDIT_USER_LIST_URL } from 'src/constant';
+import { REDDIT_USER_LIST_URL } from '../constant';
 
 @Injectable()
 export class RedditUserClientTaskService {
@@ -32,33 +32,24 @@ export class RedditUserClientTaskService {
       const usersData: any[] = users.data.data.children;
       lastResponseUserName = usersData[usersData.length - 1].data.name;
       const userDocumentItems: RedditUser[] = [];
-      const found = await this.prepareUserItemsDocument(
-        userDocumentItems,
-        usersData,
-        lastRedditUser.name,
-      );
-      isLastUserFound= found;
-      await this.redditUserModel.insertMany(userDocumentItems);
-      if (isLastUserFound) break;
+      for (const redditUserData of usersData) {
+        const element: RedditUser = redditUserData.data as RedditUser;
+        if (element.name === lastRedditUser.name) {
+          this.logger.debug('Last saved user found, synchronization will end');
+          isLastUserFound = true;
+          break;
+        }
+        if (!isLastUserFound) {
+          const userCheck = await this.usersService.getUserByName(element.name);
+          if (userCheck === null) userDocumentItems.push(element);
+        }
+      }
+      if (userDocumentItems.length)
+        await this.redditUserModel.insertMany(userDocumentItems);
       this.logger.log(`${userDocumentItems.length} Users Saved`);
+      if (isLastUserFound) break;
     }
     this.logger.log('Users synchronization ended');
     return;
-  }
-
-  private async prepareUserItemsDocument(
-    userDocumentItems: RedditUser[],
-    usersData: any[],
-    lastRedditUserName: string,
-  ): Promise<boolean> {
-    return await usersData.reduce(async (promise, redditUserData) => {
-      const element: RedditUser = redditUserData.data as RedditUser;
-      if (element.name === lastRedditUserName) {
-        this.logger.debug('Last saved user found, synchronization will end');
-        return true;
-      }
-      const userCheck = await this.usersService.getUserByName(element.name);
-      if (!userCheck) userDocumentItems.push(element);
-    }, Promise.resolve());
   }
 }
