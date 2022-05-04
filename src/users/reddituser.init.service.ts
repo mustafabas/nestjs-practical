@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { UsersService } from './users.service';
 import axios from 'axios';
 import { REDDIT_USER_LIST_URL } from '../constant';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RedditUsersInitService implements OnModuleInit {
@@ -13,7 +14,8 @@ export class RedditUsersInitService implements OnModuleInit {
   constructor(
     @InjectModel(RedditUser.name)
     private redditUserModel: Model<RedditUserDocument>,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private configService: ConfigService,
   ) {}
   async onModuleInit() {
     const firstRedditUser = await this.usersService.findOneOrderByRedditCreated(
@@ -25,6 +27,13 @@ export class RedditUsersInitService implements OnModuleInit {
     };
 
     const oneHourBefore = new Date();
+    oneHourBefore.setHours(
+      oneHourBefore.getHours() -
+        this.configService.get<number>(
+          'HOUR_FOR_LAST_REDDITUSER_INITIALIZATION',
+        ),
+    );
+
     while (1) {
       if (!!firstRedditUserTemp.created) {
         const firstUserCreatedDate = new Date(

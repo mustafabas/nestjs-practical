@@ -3,10 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RedditUser, RedditUserDocument } from '../schemas/reddituser.schema';
 import { UsersService } from './users.service';
 import { Model } from 'mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('UsersService', () => {
   let service: UsersService;
   let mockUserModel: Model<RedditUserDocument>;
+  let configService : ConfigService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,6 +18,7 @@ describe('UsersService', () => {
           provide: getModelToken(RedditUser.name),
           useValue: Model, // <-- Use the Model Class from Mongoose
         },
+        ConfigService
       ],
     }).compile();
     mockUserModel = module.get<Model<RedditUserDocument>>(

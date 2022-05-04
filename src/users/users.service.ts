@@ -3,12 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { RedditUser, RedditUserDocument } from '../schemas/reddituser.schema';
 import { Model } from 'mongoose';
 import { SearchUserDto } from './dto/searchuser.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(RedditUser.name)
-    private redditUserModel: Model<RedditUserDocument>,
+    private redditUserModel: Model<RedditUserDocument>
   ) {}
   async findOneOrderByRedditCreated(orderBy: number): Promise<RedditUser> {
     const firstRedditUser = await this.redditUserModel.findOne(
