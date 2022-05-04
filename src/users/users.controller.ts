@@ -10,11 +10,11 @@ export class UsersController {
 
   @Get()
   async searchUsers(
-    @Query() searchUserDto: SearchUserDto,
+    @Query() query: Record<string, any>
   ): Promise<BaseResponse<RedditUser[]>> {
-    const result = await this.usersService.searchUsers(searchUserDto);
+    const result = await this.usersService.searchUsers(query);
     const response: BaseResponse<RedditUser[]> = {
-      result: result,
+      result: result, 
       success: true,
       message: 'User retrieved successfully',
     };
