@@ -8,7 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 describe('UsersService', () => {
   let service: UsersService;
   let mockUserModel: Model<RedditUserDocument>;
-  let configService : ConfigService
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,7 +18,7 @@ describe('UsersService', () => {
           provide: getModelToken(RedditUser.name),
           useValue: Model, // <-- Use the Model Class from Mongoose
         },
-        ConfigService
+        ConfigService,
       ],
     }).compile();
     mockUserModel = module.get<Model<RedditUserDocument>>(
@@ -46,5 +46,14 @@ describe('UsersService', () => {
       offset: 0,
     });
     expect(result.length).toBe(2);
+  });
+
+  it('it should getUserByName successfully', async () => {
+    jest
+      .spyOn(mockUserModel, 'findOne')
+      .mockResolvedValueOnce({ display_name: 'test' });
+    const result = await service.getUserByName('test');
+
+    expect(result.display_name).toBe('test');
   });
 });

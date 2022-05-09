@@ -10,16 +10,15 @@ export class SubredditsController {
 
   @Get()
   async searchSubReddits(
-    @Query() query,
+    @Query() searchSubRedditDto: SearchSubRedditDto,
   ): Promise<BaseResponse<SubReddit[]>> {
-      
     const result = await this.subRedditservice.searchSubReddit(
-        query,
+        searchSubRedditDto,
     );
     const response: BaseResponse<SubReddit[]> = {
       result: result,
       success: true,
-      message: 'User retrieved successfully',
+      message: 'Subreddits retrieved successfully',
     };
     return response;
   }

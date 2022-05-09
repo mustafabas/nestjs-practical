@@ -7,7 +7,7 @@ export type SubRedditDocument = SubReddit & Document;
 @Schema()
 export class SubReddit {
   title: string;
-  name:string;
+  name: string;
   display_name: string;
   id: string;
   subscribers: number;

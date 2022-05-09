@@ -46,4 +46,14 @@ describe('SubredditsService', () => {
     });
     expect(result.length).toBe(2);
   });
+
+  it('it should getSubRedditByName successfully', async () => {
+
+    jest
+      .spyOn(mockSubRedditModel, 'findOne')
+      .mockResolvedValueOnce({ display_name: 'test' });
+    const result = await service.getSubRedditByName('test');
+
+    expect(result.display_name).toBe('test');
+  });
 });

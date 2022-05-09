@@ -3,7 +3,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import axios from 'axios';
 import { REDDIT_SUBREDDIT_LIST_URL } from '../constant';
-import { SubReddit, SubRedditDocument } from 'src/schemas/subreddit.schema';
+import { SubReddit, SubRedditDocument } from '../schemas/subreddit.schema';
 import { SubredditsService } from './subreddits.service';
 import { ConfigService } from '@nestjs/config';
 
