@@ -2,7 +2,7 @@ import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RedditUser, RedditUserDocument } from '../schemas/reddituser.schema';
 import { Model } from 'mongoose';
-import { RedditUserClientTaskService } from './reddituser.client.service';
+import { RedditUserClientTaskService } from './reddituser.client.task.service';
 import { UsersService } from './users.service';
 import axios from 'axios';
 

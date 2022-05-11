@@ -7,7 +7,7 @@ import { Model } from 'mongoose';
 export class UsersService {
   constructor(
     @InjectModel(RedditUser.name)
-    private redditUserModel: Model<RedditUserDocument>,
+    private redditUserModel: Model<RedditUserDocument>
   ) {}
   async findOneOrderByRedditCreated(orderBy: number): Promise<RedditUser> {
     const firstRedditUser = await this.redditUserModel.findOne(

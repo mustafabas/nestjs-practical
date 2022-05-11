@@ -1,11 +1,12 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RedditUser, RedditUserDocument } from '../schemas/reddituser.schema';
-import { RedditUserClientTaskService } from './reddituser.client.service';
 import { RedditUsersInitService } from './reddituser.init.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { Model } from 'mongoose';
+import { ConfigModule } from '@nestjs/config';
+import { RedditUserClientTaskService } from './reddituser.client.task.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -13,6 +14,7 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports:[ConfigModule],
       providers: [
         UsersService,
         RedditUserClientTaskService,
