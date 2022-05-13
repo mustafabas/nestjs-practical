@@ -1,10 +1,12 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { BaseResponse } from 'src/models';
 import { RedditUser } from '../schemas/reddituser.schema';
 import { SearchUserDto } from './dto/searchuser.dto';
 import { UsersService } from './users.service';
 
-@Controller('users')
+@Controller('api/users')
+@UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

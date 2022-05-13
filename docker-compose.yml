@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+    dev:
+        container_name: reddit_api_dev_2
+        image: reddit-api-dev:1.1.0
+        build:
+            context: .
+            target: development
+            dockerfile: ./Dockerfile
+        command: npm run dev-docker
+        ports:
+            - 3000:3000
+            - 9229:9229
+        networks:
+            - nesjs-network
+        volumes:
+            - .:/usr/src/
+            - /usr/node_modules
+        restart: unless-stopped
+    prod:
+        container_name: reddit_api_prod
+        image: reddit-api-prod:1.0.0
+        build:
+            context: .
+            target: production
+            dockerfile: ./Dockerfile
+        command: npm run prod-docker
+        ports:
+            - 3000:3000
+            - 9229:9229
+        networks:
+            - nesjs-network
+        volumes:
+            - .:/usr/src
+            - /usr/node_modules
+        restart: unless-stopped
+
+networks:
+    nesjs-network:
