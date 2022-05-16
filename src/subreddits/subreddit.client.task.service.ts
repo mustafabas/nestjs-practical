@@ -17,7 +17,7 @@ export class SubRedditClientTaskService {
     private subRedditsService: SubredditsService,
   ) {}
 
-  @Cron('0 05 * * * *	')
+  @Cron('0 15 * * * *	')
   async synchronizeSubredditTask() {
     this.logger.log('Subredddit synchronization started');
     const lastSubReddit =

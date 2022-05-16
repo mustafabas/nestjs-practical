@@ -20,7 +20,7 @@ export class PostsClientTaskService {
     private subRedditService: SubredditsService,
   ) {}
 
-  @Cron('0 26 * * * *	')
+  @Cron('0 45 * * * *	')
   async synchronizePostsTask() {
     const dayBefore = new Date();
     dayBefore.setHours(
