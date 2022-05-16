@@ -26,6 +26,10 @@ export class SubredditsService {
     return await this.subRedditModel.findOne({ name: name });
   }
 
+  async getSubRedditWithPostByTitle(name: string): Promise<SubReddit> {
+    return await this.subRedditModel.findOne({ title: name }).populate('posts');
+  }
+
   async searchSubReddit(
     searchSubRedditDto: SearchSubRedditDto,
   ): Promise<SubReddit[]> {
@@ -44,5 +48,13 @@ export class SubredditsService {
         .skip(offset);
     }
     return await this.subRedditModel.find().limit(limit).skip(offset);
+  }
+
+  async findAllSubReddits(): Promise<SubReddit[]> {
+    return await this.subRedditModel.find();
+  }
+
+  async updateSubReddit(subReddit: SubReddit){
+    return await this.subRedditModel.updateOne(subReddit);
   }
 }

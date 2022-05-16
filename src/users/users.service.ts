@@ -23,14 +23,20 @@ export class UsersService {
   }
 
   async searchUsers(query: Record<string, any>): Promise<RedditUser[]> {
-    let { limit, offset } = query;
-    if (limit === 0) limit = 100;
-    if (!offset) offset = 0;
+    let limit = 100;
+    let offset = 0;
+    if (query) {
+      if (query.limit) limit = query.limit;
+      if (query.offset) offset = query.offset;
+    }
     const whereCondition = this.prepareWhereCondiditon(query);
-    return await this.redditUserModel
-      .find({ ...whereCondition })
-      .limit(limit)
-      .skip(offset);
+    if (whereCondition) {
+      return await this.redditUserModel
+        .find({ ...whereCondition })
+        .limit(limit)
+        .skip(offset);
+    }
+    return await this.redditUserModel.find().limit(limit).skip(offset);
   }
 
   prepareWhereCondiditon(query: Record<string, any>): Record<string, any> {

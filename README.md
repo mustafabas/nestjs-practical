@@ -1,73 +1,140 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Reddit Simple Api
+This project created with nest.js used mongodb. Purpose of project is providing reddits,users and posts. 
+There are 3 job schedular to get data from reddit works in different times. 
+- Getting Users works at the 30th minute of every hour
+- Getting Reddit works at the 15th minute of every hour
+- Getting Posts works at the 45th minute of every hour
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+In aditionally there are also initalizations for users and reddits. 
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+In the .env file, you can specify how long before the data is retrieved.
+- HOUR_FOR_LAST_REDDITUSER_INITIALIZATION=1
+- DAY_FOR_LAST_SUBREDDIT_INITIALIZATION=1
 
-## Installation
+To start application;
+- dev mode: docker-compose up dev
+- prod mode :docker-compose up prod
 
-```bash
-$ npm install
+#### Register User
+
+```http
+  POST /auth/signup
+  Body 
+  {
+	"userName":"test9",
+	"password":"te213123"
+  }
 ```
 
-## Running the app
 
-```bash
-# development
-$ npm run start
+| Parametre | Tip     | Açıklama                |
+| :-------- | :------- | :------------------------- |
+| `userName` | `string` | **Required**.  |
+| `password` | `string` | **Required**.  |
 
-# watch mode
-$ npm run start:dev
+#### Signin(Get Token)
 
-# production mode
-$ npm run start:prod
+```http
+  POST /auth/signin
+  Body 
+  {
+	"userName":"test9",
+	"password":"te213123"
+  }
+```
+| Parametre | Tip     | Açıklama                |
+| :-------- | :------- | :------------------------- |
+| `userName` | `string` | **Required**.  |
+| `password` | `string` | **Required**.  |
+
+Response
+```javascript  
+{
+    "result": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q0IiwiaWF0IjoxNjUyNzAxMDIxLCJleHAiOjE2NTI3MDQ2MjF9.pKCCEb4J7hlP-VSzX8YKmo-FZiOyh7fEvlH9d6I72MM"
+    },
+    "success": true
+}
+```
+```http
+In order to make request successfully, you should add Authorization too all reqests below parameter to header like this;
+
+Authorization : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q0IiwiaWF0IjoxNjUyNzAxMDIxLCJleHAiOjE2NTI3MDQ2MjF9.pKCCEb4J7hlP-VSzX8YKmo-FZiOyh7fEvlH9d6I72MM
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+#### Get/Search Posts
+```http
+  /api/posts?limit={limit}&offset={offset}&[res.field-name: response.field_value]
 ```
 
-## Support
+| Parametre | Tip     | Açıklama                       |
+| :-------- | :------- | :-------------------------------- |
+| `limit`      | `string` | Default=100.|
+| `offset`      | `string` | Default=0.|
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**You can also set other parameter to filter response. 
 
-## Stay in touch
+#### Get Post By Reddit
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```http
+  /api/posts/{reddit}
+```
 
-## License
+| Parametre | Tip     | Açıklama                       |
+| :-------- | :------- | :-------------------------------- |
+| `reddit`      | `string` | **Required**, Redditname|
 
-Nest is [MIT licensed](LICENSE).
+#### Get Post By Reddit
+
+```http
+  /api/post/{id}
+```
+
+| Parametre | Tip     | Açıklama                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**, post id |
+
+
+#### Delete Post By Id
+
+```http 
+  HTTPDELETE /api/post/{id}
+```
+
+| Parametre | Tip     | Açıklama                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**, post id |
+
+
+
+#### Get Posts
+
+```http
+  /api/users?limit={limit}&offset={offset}&[res.field-name: response.field_value]
+```
+
+| Parametre | Tip     | Açıklama                       |
+| :-------- | :------- | :-------------------------------- |
+| `limit`      | `string` | Default=100.|
+| `offset`      | `string` | Default=0.|
+
+**You can also set other parameter to filter response. 
+
+```http
+Example:
+/api/users?limit=100&created=1651224247&allow_images=true
+```
+
+#### Get Reddits
+
+```http
+  /api/reddits?limit={limit}&offset={offset}&displayName={name}
+```
+
+| Parametre | Tip     | Açıklama                       |
+| :-------- | :------- | :-------------------------------- |
+| `limit`      | `string` | Default=100.|
+| `offset`      | `string` | Default=0.|
+| `offset`      | `string` | Subreddit name|

@@ -14,9 +14,13 @@ import { SubRedditClientTaskService } from './subreddit.client.task.service';
       { name: SubReddit.name, schema: SubRedditSchema },
     ]),
     ScheduleModule.forRoot(),
-    ConfigModule
+    ConfigModule,
   ],
-  providers: [SubredditsService, SubRedditInitService, SubRedditClientTaskService],
+  providers: [
+    SubredditsService,
+    SubRedditInitService,
+    SubRedditClientTaskService,
+  ],
   controllers: [SubredditsController],
 })
 export class SubredditsModule {}
